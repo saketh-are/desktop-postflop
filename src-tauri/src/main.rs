@@ -17,8 +17,30 @@ use rayon::{ThreadPool, ThreadPoolBuilder};
 use std::sync::Mutex;
 use sysinfo::{System, SystemExt};
 
-fn main() {
+use tokio;
+use warp::Filter;
+use tauri::Manager;
+
+#[tokio::main]
+async fn main() {
     tauri::Builder::default()
+        .setup(|app| {
+            let app_handle = app.app_handle();
+
+            let set_board = warp::path!("set_board" / String)
+                .map(move |message: String| {
+                    app_handle.emit_all("set_board", message.clone()).expect("");
+                    format!("set_board {}", message)
+                });
+
+            let routes = set_board;
+
+            tauri::async_runtime::spawn(async move {
+                warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
+            });
+
+            Ok(())
+        })
         .manage(Mutex::new(RangeManager::default()))
         .manage(Mutex::new(default_action_tree()))
         .manage(Mutex::new(None as Option<BunchingData>))

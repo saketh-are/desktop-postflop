@@ -38,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+import { appWindow } from '@tauri-apps/api/window';
 import { ref } from "vue";
 import { useConfigStore } from "../store";
 import { cardText, parseCardString } from "../utils";
@@ -102,4 +103,10 @@ const generateRandomBoard = () => {
   config.board.sort((a, b) => b - a);
   setBoardTextFromButtons();
 };
+
+appWindow.listen('set_board', (event) => {
+  console.log('Setting board cards :', event.payload);
+  boardText.value = event.payload as string;
+  onBoardTextChange();
+})
 </script>
