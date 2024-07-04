@@ -741,6 +741,7 @@
 </template>
 
 <script setup lang="ts">
+import { appWindow } from '@tauri-apps/api/window';
 import { computed, ref } from "vue";
 import { useStore, useConfigStore } from "../store";
 import {
@@ -1080,6 +1081,17 @@ const cancelEdit = () => {
   }
   store.headers["tree-config"].pop();
 };
+
+appWindow.listen('set_starting_pot', (event) => {
+  console.log('Setting starting pot :', event.payload);
+  config.startingPot = event.payload as number;
+})
+
+appWindow.listen('set_effective_stack', (event) => {
+  console.log('Setting effective stack:', event.payload);
+  config.effectiveStack = event.payload as number;
+})
+
 </script>
 
 <style scoped>

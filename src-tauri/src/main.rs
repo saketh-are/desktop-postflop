@@ -19,21 +19,29 @@ use sysinfo::{System, SystemExt};
 
 use tokio;
 use warp::Filter;
-use tauri::Manager;
+use tauri::{Manager, AppHandle};
+
+fn create_route(app_handle: AppHandle, event_name: &'static str)
+-> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    warp::path(event_name)
+        .and(warp::path::param())
+        .map(move |message: String| {
+            app_handle.emit_all(event_name, message.clone()).expect("");
+            format!("{} {}", event_name, message)
+        })
+}
 
 #[tokio::main]
 async fn main() {
     tauri::Builder::default()
         .setup(|app| {
-            let app_handle = app.app_handle();
+            let set_board = create_route(app.app_handle(), "set_board");
+            let set_starting_pot = create_route(app.app_handle(), "set_starting_pot");
+            let set_effective_stack = create_route(app.app_handle(), "set_effective_stack");
 
-            let set_board = warp::path!("set_board" / String)
-                .map(move |message: String| {
-                    app_handle.emit_all("set_board", message.clone()).expect("");
-                    format!("set_board {}", message)
-                });
-
-            let routes = set_board;
+            let routes = set_board
+                .or(set_starting_pot)
+                .or(set_effective_stack);
 
             tauri::async_runtime::spawn(async move {
                 warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
