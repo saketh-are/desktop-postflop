@@ -1084,12 +1084,12 @@ const cancelEdit = () => {
 
 appWindow.listen('set_starting_pot', (event) => {
   console.log('Setting starting pot :', event.payload);
-  config.startingPot = event.payload as number;
+  config.startingPot = Number(event.payload);
 })
 
 appWindow.listen('set_effective_stack', (event) => {
   console.log('Setting effective stack:', event.payload);
-  config.effectiveStack = event.payload as number;
+  config.effectiveStack = Number(event.payload);
 })
 
 </script>
