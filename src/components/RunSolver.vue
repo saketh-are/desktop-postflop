@@ -314,6 +314,7 @@
 </template>
 
 <script setup lang="ts">
+import { appWindow } from '@tauri-apps/api/window';
 import { computed, ref } from "vue";
 import {
   useStore,
@@ -706,4 +707,19 @@ const resumeSolver = async () => {
   const end = performance.now();
   elapsedTimeMs.value += end - startTime;
 };
+
+appWindow.listen('set_num_threads', (event) => {
+  console.log('Setting num threads :', event.payload);
+  numThreads.value = event.payload as number;
+})
+
+appWindow.listen('build_tree', (event) => {
+  console.log('Building tree...');
+  buildTree();
+})
+
+appWindow.listen('run_solver', (event) => {
+  console.log('Running solver...');
+  runSolver();
+})
 </script>

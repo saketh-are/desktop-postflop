@@ -38,10 +38,18 @@ async fn main() {
             let set_board = create_route(app.app_handle(), "set_board");
             let set_starting_pot = create_route(app.app_handle(), "set_starting_pot");
             let set_effective_stack = create_route(app.app_handle(), "set_effective_stack");
+            let set_num_threads = create_route(app.app_handle(), "set_num_threads");
+
+            // TODO: these shouldn't take a param
+            let build_tree = create_route(app.app_handle(), "build_tree");
+            let run_solver = create_route(app.app_handle(), "run_solver");
 
             let routes = set_board
                 .or(set_starting_pot)
-                .or(set_effective_stack);
+                .or(set_effective_stack)
+                .or(set_num_threads)
+                .or(build_tree)
+                .or(run_solver);
 
             tauri::async_runtime::spawn(async move {
                 warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
