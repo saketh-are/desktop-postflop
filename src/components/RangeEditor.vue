@@ -135,6 +135,7 @@
 </template>
 
 <script setup lang="ts">
+import { appWindow } from '@tauri-apps/api/window';
 import { ref } from "vue";
 import { useStore } from "../store";
 import { ranks, trimRegex, rangeRegex } from "../utils";
@@ -270,4 +271,20 @@ const loadRange = (rangeStr: unknown) => {
   rangeText.value = String(rangeStr);
   onRangeTextChange();
 };
+
+appWindow.listen('set_range_oop', (event) => {
+  if (props.player == 0) {
+    console.log('set_range_oop:', event.payload);
+    rangeText.value = event.payload as string;
+    onRangeTextChange();
+  }
+})
+
+appWindow.listen('set_range_ip', (event) => {
+  if (props.player == 1) {
+    console.log('set_range_ip:', event.payload);
+    rangeText.value = event.payload as string;
+    onRangeTextChange();
+  }
+})
 </script>

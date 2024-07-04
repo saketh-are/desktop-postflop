@@ -36,6 +36,8 @@ async fn main() {
     tauri::Builder::default()
         .setup(|app| {
             let set_board = create_route(app.app_handle(), "set_board");
+            let set_range_oop = create_route(app.app_handle(), "set_range_oop");
+            let set_range_ip = create_route(app.app_handle(), "set_range_ip");
             let set_starting_pot = create_route(app.app_handle(), "set_starting_pot");
             let set_effective_stack = create_route(app.app_handle(), "set_effective_stack");
             let set_num_threads = create_route(app.app_handle(), "set_num_threads");
@@ -45,6 +47,8 @@ async fn main() {
             let run_solver = create_route(app.app_handle(), "run_solver");
 
             let routes = set_board
+                .or(set_range_oop)
+                .or(set_range_ip)
                 .or(set_starting_pot)
                 .or(set_effective_stack)
                 .or(set_num_threads)
